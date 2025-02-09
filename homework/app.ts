@@ -4,28 +4,34 @@ let operator: string | null = null;
 
 function appendNumber(num: number): void {
   currentInput += num.toString();
-  updateDisplay(currentInput);
+
+  if (operator) {
+    updateDisplay(currentInput);
+  } else {
+    updateDisplay(`${previousInput} ${operator} ${currentInput}`);
+  }
 }
 
 
-function setOperator(op: string): void {
-  
-  if (!currentInput && !previousInput) return;  
 
- 
+function setOperator(op: string): void {
+
+  if (!currentInput && !previousInput) return;
+
+
   if (previousInput && currentInput) {
     calculateResult();
   }
 
-  
+
   if (currentInput) {
     previousInput = currentInput;
-    currentInput = ''; 
+    currentInput = '';
   }
 
   operator = op;
 
-  
+
   updateDisplay(`${previousInput} ${operator}`);
 }
 
