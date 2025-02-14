@@ -5,7 +5,7 @@ let operator: string | null = null;
 function appendNumber(num: number): void {
   currentInput += num.toString();
 
-  if (operator) {
+  if (operator === null) {
     updateDisplay(currentInput);
   } else {
     updateDisplay(`${previousInput} ${operator} ${currentInput}`);
@@ -15,25 +15,24 @@ function appendNumber(num: number): void {
 
 
 function setOperator(op: string): void {
-
   if (!currentInput && !previousInput) return;
 
-
   if (previousInput && currentInput) {
-    calculateResult();
+      calculateResult();
   }
-
 
   if (currentInput) {
-    previousInput = currentInput;
-    currentInput = '';
+      previousInput = currentInput;
+      currentInput = '';
   }
 
+  
   operator = op;
 
-
   updateDisplay(`${previousInput} ${operator}`);
+  addHistory(`${previousInput} ${operator}`);
 }
+
 
 
 function calculateResult(): void {
@@ -44,26 +43,28 @@ function calculateResult(): void {
   let result: number = 0;
 
   switch (operator) {
-    case '+':
-      result = prev + curr;
-      break;
-    case '-':
-      result = prev - curr;
-      break;
-    case '*':
-      result = prev * curr;
-      break;
-    case '/':
-      result = prev / curr;
-      break;
+      case '+':
+          result = prev + curr;
+          break;
+      case '-':
+          result = prev - curr;
+          break;
+      case '*':
+          result = prev * curr;
+          break;
+      case '/':
+          result = prev / curr;
+          break;
   }
 
   currentInput = result.toString();
   operator = null;
-  previousInput = '';
+  previousInput = ''; 
+
   updateDisplay(currentInput);
-  addHistory(`${previousInput} ${operator} ${currentInput} = ${result}`);
+  addHistory(`${previousInput} ${operator || ''} ${currentInput} = ${result}`);
 }
+
 function addHistory(record: string): void {
   const historyElement = document.getElementById('history') as HTMLDivElement;
 
@@ -79,11 +80,6 @@ function clearDisplay(): void {
   previousInput = '';
   operator = null;
   updateDisplay('0');
-}
-
-
-function resetCalculator(): void {
-  clearDisplay();
 }
 
 function updateDisplay(value: string): void {

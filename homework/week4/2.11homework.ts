@@ -1,16 +1,13 @@
 const readline = require('readline');
 
-
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-
 const totalQuestions = 10;
 const passingGrade = 50;
 const maxGrade = 100;
-
 
 const scoreRange = {
   smart: 90,
@@ -20,36 +17,44 @@ const scoreRange = {
   tryAgain: 59
 };
 
-
-const questions = [
-  { question: 'What is 1 + 1?', correctAnswer: '2' },
-  { question: 'What is 2 + 2?', correctAnswer: '4' },
-  { question: 'What is 3 + 3?', correctAnswer: '6' },
-  { question: 'What is 4 + 4?', correctAnswer: '8' },
-  { question: 'What is 5 + 5?', correctAnswer: '10' },
-  { question: 'What is 6 + 6?', correctAnswer: '12' },
-  { question: 'What is 7 + 7?', correctAnswer: '14' },
-  { question: 'What is 8 + 8?', correctAnswer: '16' },
-  { question: 'What is 9 + 9?', correctAnswer: '18' },
-  { question: 'What is 10 + 10?', correctAnswer: '20' }
-];
-
-
-
-
-
 let score = 0;
 let attempts = 0;
 
 const messages = {
   good: ['Very good!', 'Excellent!', 'Nice work!', 'Keep up the good work!'],
-  wrong: ['No. Please try again.', 'Wrong. Try once more.', 'No. Don’t give up!', 'Not correct. Keep trying.']
+  wrong: ['No. Please try again.', 'Wrong. Try once more.', 'No. Don\'t give up!', 'Not correct.']
 };
 
 
+function generateRandomQuestion() {
+  let  num1 = Math.floor(Math.random() * 90) + 10; 
+  let num2 = Math.floor(Math.random() * 90) + 10; 
+  const operator = Math.random() > 0.5 ? '+' : '-'; 
+
+  if (operator === '-') {
+    
+    if (num1 < num2) {
+      [num1, num2] = [num2, num1]; 
+    }
+  }
+  let question = `${num1} ${operator} ${num2}`;
+  let correctAnswer;
+
+  
+  if (operator === '+') {
+    correctAnswer = num1 + num2;
+  } else {
+    correctAnswer = num1 - num2;
+  }
+
+  return { question, correctAnswer };
+}
+
+
 function askQuestion(index: number) {
-  rl.question(`${questions[index].question} `, (answer) => {
-    if (answer === questions[index].correctAnswer) {
+  const { question, correctAnswer } = generateRandomQuestion(); 
+  rl.question(`Question ${index + 1}: ${question} = `, (answer) => {
+    if (parseInt(answer) === correctAnswer) {
       score += 10;
       console.log(messages.good[Math.floor(Math.random() * messages.good.length)]);
       attempts = 0;
@@ -57,19 +62,18 @@ function askQuestion(index: number) {
       attempts++;
       if (attempts < 3) {
         console.log(messages.wrong[Math.floor(Math.random() * messages.wrong.length)]);
-        askQuestion(index);
+        askQuestion(index);  
       } else {
         console.log('Incorrect answer, moving to next question.');
         attempts = 0;
       }
     }
 
-
-    if (index + 1 < questions.length) {
-      askQuestion(index + 1);
+    if (index + 1 < totalQuestions) {
+      askQuestion(index + 1); 
     } else {
       console.log('All questions completed!');
-      gradeStudent();
+      gradeStudent();  
     }
   });
 }
@@ -88,9 +92,9 @@ function gradeStudent() {
   } else {
     finalMessage = 'TRY AGAIN';
   }
+
   console.log(`Your score: ${score} - Result: ${finalMessage}`);
   rl.close();
 }
 
-
-askQuestion(0);
+askQuestion(0);  

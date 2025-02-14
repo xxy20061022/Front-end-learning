@@ -13,27 +13,36 @@ var scoreRange = {
     pass: 60,
     tryAgain: 59
 };
-var questions = [
-    { question: 'What is 1 + 1?', correctAnswer: '2' },
-    { question: 'What is 2 + 2?', correctAnswer: '4' },
-    { question: 'What is 3 + 3?', correctAnswer: '6' },
-    { question: 'What is 4 + 4?', correctAnswer: '8' },
-    { question: 'What is 5 + 5?', correctAnswer: '10' },
-    { question: 'What is 6 + 6?', correctAnswer: '12' },
-    { question: 'What is 7 + 7?', correctAnswer: '14' },
-    { question: 'What is 8 + 8?', correctAnswer: '16' },
-    { question: 'What is 9 + 9?', correctAnswer: '18' },
-    { question: 'What is 10 + 10?', correctAnswer: '20' }
-];
 var score = 0;
 var attempts = 0;
 var messages = {
     good: ['Very good!', 'Excellent!', 'Nice work!', 'Keep up the good work!'],
-    wrong: ['No. Please try again.', 'Wrong. Try once more.', 'No. Don’t give up!', 'Not correct. Keep trying.']
+    wrong: ['No. Please try again.', 'Wrong. Try once more.', 'No. Don\'t give up!', 'Not correct.']
 };
+function generateRandomQuestion() {
+    var _a;
+    var num1 = Math.floor(Math.random() * 90) + 10;
+    var num2 = Math.floor(Math.random() * 90) + 10;
+    var operator = Math.random() > 0.5 ? '+' : '-';
+    if (operator === '-') {
+        if (num1 < num2) {
+            _a = [num2, num1], num1 = _a[0], num2 = _a[1];
+        }
+    }
+    var question = "".concat(num1, " ").concat(operator, " ").concat(num2);
+    var correctAnswer;
+    if (operator === '+') {
+        correctAnswer = num1 + num2;
+    }
+    else {
+        correctAnswer = num1 - num2;
+    }
+    return { question: question, correctAnswer: correctAnswer };
+}
 function askQuestion(index) {
-    rl.question("".concat(questions[index].question, " "), function (answer) {
-        if (answer === questions[index].correctAnswer) {
+    var _a = generateRandomQuestion(), question = _a.question, correctAnswer = _a.correctAnswer;
+    rl.question("Question ".concat(index + 1, ": ").concat(question, " = "), function (answer) {
+        if (parseInt(answer) === correctAnswer) {
             score += 10;
             console.log(messages.good[Math.floor(Math.random() * messages.good.length)]);
             attempts = 0;
@@ -49,7 +58,7 @@ function askQuestion(index) {
                 attempts = 0;
             }
         }
-        if (index + 1 < questions.length) {
+        if (index + 1 < totalQuestions) {
             askQuestion(index + 1);
         }
         else {

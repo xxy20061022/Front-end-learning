@@ -3,7 +3,7 @@ var previousInput = '';
 var operator = null;
 function appendNumber(num) {
     currentInput += num.toString();
-    if (operator) {
+    if (operator === null) {
         updateDisplay(currentInput);
     }
     else {
@@ -22,6 +22,7 @@ function setOperator(op) {
     }
     operator = op;
     updateDisplay("".concat(previousInput, " ").concat(operator));
+    addHistory("".concat(previousInput, " ").concat(operator));
 }
 function calculateResult() {
     if (!previousInput || !currentInput || !operator)
@@ -47,15 +48,19 @@ function calculateResult() {
     operator = null;
     previousInput = '';
     updateDisplay(currentInput);
+    addHistory("".concat(previousInput, " ").concat(operator || '', " ").concat(currentInput, " = ").concat(result));
+}
+function addHistory(record) {
+    var historyElement = document.getElementById('history');
+    var historyItem = document.createElement('div');
+    historyItem.textContent = record;
+    historyElement.insertBefore(historyItem, historyElement.firstChild);
 }
 function clearDisplay() {
     currentInput = '';
     previousInput = '';
     operator = null;
     updateDisplay('0');
-}
-function resetCalculator() {
-    clearDisplay();
 }
 function updateDisplay(value) {
     var displayElement = document.getElementById('display');
