@@ -1,70 +1,76 @@
 var currentInput = '';
 var previousInput = '';
-var operator = null;
-function appendNumber(num) {
-    currentInput += num.toString();
-    if (operator === null) {
-        updateDisplay(currentInput);
+var operator = '';
+var calculationHistory = '';
+function appendNumber(number) {
+    if (calculationHistory !== '' && previousInput === '') {
+        currentInput = number;
+        previousInput = '';
     }
     else {
-        updateDisplay("".concat(previousInput, " ").concat(operator, " ").concat(currentInput));
+        currentInput += number;
+        updateDisplay(currentInput);
+        updateHistory();
     }
 }
 function setOperator(op) {
-    if (!currentInput && !previousInput)
+    if (currentInput === '')
         return;
-    if (previousInput && currentInput) {
+    if (previousInput !== '') {
         calculateResult();
     }
-    if (currentInput) {
-        previousInput = currentInput;
-        currentInput = '';
-    }
     operator = op;
-    updateDisplay("".concat(previousInput, " ").concat(operator));
-    addHistory("".concat(previousInput, " ").concat(operator));
-}
-function calculateResult() {
-    if (!previousInput || !currentInput || !operator)
-        return;
-    var prev = parseFloat(previousInput);
-    var curr = parseFloat(currentInput);
-    var result = 0;
-    switch (operator) {
-        case '+':
-            result = prev + curr;
-            break;
-        case '-':
-            result = prev - curr;
-            break;
-        case '*':
-            result = prev * curr;
-            break;
-        case '/':
-            result = prev / curr;
-            break;
-    }
-    currentInput = result.toString();
-    operator = null;
-    previousInput = '';
-    updateDisplay(currentInput);
-    addHistory("".concat(previousInput, " ").concat(operator || '', " ").concat(currentInput, " = ").concat(result));
-}
-function addHistory(record) {
-    var historyElement = document.getElementById('history');
-    var historyItem = document.createElement('div');
-    historyItem.textContent = record;
-    historyElement.insertBefore(historyItem, historyElement.firstChild);
+    previousInput = currentInput;
+    currentInput = '';
+    updateHistory();
 }
 function clearDisplay() {
     currentInput = '';
     previousInput = '';
-    operator = null;
+    operator = '';
+    calculationHistory = '';
     updateDisplay('0');
+    updateHistory();
 }
-function updateDisplay(value) {
-    var displayElement = document.getElementById('display');
-    if (displayElement) {
-        displayElement.textContent = value;
+function calculateResult() {
+    var result = 0;
+    var prev = parseFloat(previousInput);
+    var current = parseFloat(currentInput);
+    if (isNaN(prev) || isNaN(current))
+        return;
+    switch (operator) {
+        case '+':
+            result = prev + current;
+            break;
+        case '-':
+            result = prev - current;
+            break;
+        case '*':
+            result = prev * current;
+            break;
+        case '/':
+            if (current === 0) {
+                alert("不能除以0");
+                return;
+            }
+            result = prev / current;
+            break;
+    }
+    currentInput = result.toString();
+    operator = '';
+    previousInput = '';
+    updateDisplay(currentInput);
+    updateHistory();
+}
+function updateDisplay(displayValue) {
+    var display = document.getElementById("display");
+    if (display) {
+        display.textContent = displayValue;
+    }
+}
+function updateHistory() {
+    var history = document.getElementById("history");
+    if (history) {
+        history.textContent = "".concat(previousInput, " ").concat(operator, " ").concat(currentInput); // 更新计算过程显示
     }
 }

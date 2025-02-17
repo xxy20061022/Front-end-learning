@@ -1,90 +1,86 @@
-let currentInput: string = '';
-let previousInput: string = '';
-let operator: string | null = null;
+let currentInput = '';  
+let previousInput = ''; 
+let operator = '';      
+let calculationHistory = ''; 
 
-function appendNumber(num: number): void {
-  currentInput += num.toString();
 
-  if (operator === null) {
-    updateDisplay(currentInput);
+function appendNumber(number: string): void {
+  if (calculationHistory !== '' && previousInput ! === '') {
+    currentInput = number;  
+    previousInput = '';  
   } else {
-    updateDisplay(`${previousInput} ${operator} ${currentInput}`);
-  }
-}
-
+    currentInput += number;  
+  updateDisplay(currentInput);  
+  updateHistory();  
+}}
 
 
 function setOperator(op: string): void {
-  if (!currentInput && !previousInput) return;
-
-  if (previousInput && currentInput) {
-      calculateResult();
+  if (currentInput === '') return;  
+  if (previousInput !== '') {
+    calculateResult();  
   }
-
-  if (currentInput) {
-      previousInput = currentInput;
-      currentInput = '';
-  }
-
-  
-  operator = op;
-
-  updateDisplay(`${previousInput} ${operator}`);
-  addHistory(`${previousInput} ${operator}`);
-}
-
-
-
-function calculateResult(): void {
-  if (!previousInput || !currentInput || !operator) return;
-
-  const prev: number = parseFloat(previousInput);
-  const curr: number = parseFloat(currentInput);
-  let result: number = 0;
-
-  switch (operator) {
-      case '+':
-          result = prev + curr;
-          break;
-      case '-':
-          result = prev - curr;
-          break;
-      case '*':
-          result = prev * curr;
-          break;
-      case '/':
-          result = prev / curr;
-          break;
-  }
-
-  currentInput = result.toString();
-  operator = null;
-  previousInput = ''; 
-
-  updateDisplay(currentInput);
-  addHistory(`${previousInput} ${operator || ''} ${currentInput} = ${result}`);
-}
-
-function addHistory(record: string): void {
-  const historyElement = document.getElementById('history') as HTMLDivElement;
-
-  const historyItem = document.createElement('div');
-  historyItem.textContent = record;
-
-  historyElement.insertBefore(historyItem, historyElement.firstChild);
+  operator = op;  
+  previousInput = currentInput;  
+  currentInput = '';  
+  updateHistory();  
 }
 
 
 function clearDisplay(): void {
-  currentInput = '';
-  previousInput = '';
-  operator = null;
-  updateDisplay('0');
+  currentInput = '';  
+  previousInput = ''; 
+  operator = '';     
+  calculationHistory = ''; 
+  updateDisplay('0');  
+  updateHistory();  
 }
 
-function updateDisplay(value: string): void {
-  const displayElement = document.getElementById('display') as HTMLElement;
-  if (displayElement) {
-    displayElement.textContent = value;
+function calculateResult(): void {
+  let result: number = 0;  
+  const prev = parseFloat(previousInput);  
+  const current = parseFloat(currentInput);  
+
+  if (isNaN(prev) || isNaN(current)) return;  
+
+  switch (operator) {
+    case '+':
+      result = prev + current; 
+      break;
+    case '-':
+      result = prev - current;  
+      break;
+    case '*':
+      result = prev * current;  
+      break;
+    case '/':
+      if (current === 0) {
+        alert("不能除以0");  
+        return;
+      }
+      result = prev / current;  
+      break;
+  }
+
+  currentInput = result.toString();  
+  operator = '';  
+  previousInput = ''; 
+  updateDisplay(currentInput);  
+  updateHistory();  
+}
+
+
+function updateDisplay(displayValue: string): void {
+  const display = document.getElementById("display");
+  if (display) {
+    display.textContent = displayValue;  
+  }
+}
+
+
+function updateHistory(): void {
+  const history = document.getElementById("history");
+  if (history) {
+    history.textContent = `${previousInput} ${operator} ${currentInput}`; // 更新计算过程显示
   }
 }
